@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <ncurses.h>
 
 #include "maze.h"
 
@@ -14,13 +15,21 @@ int main() {
   maze1.rows = 6;
   maze1.cols = 45;
   PlatformReadMapFromFile("map1.txt", &maze1);
-  PlatformRenderMap(&maze1);
 
-  map maze2;
-  maze2.rows = 5;
-  maze2.cols = 5;
-  PlatformReadMapFromFile("map2.txt", &maze2);
-  PlatformRenderMap(&maze2);
+  char ch;
+
+  initscr(); // starts ncurse mode
+  cbreak();  // disable line buffering
+  noecho();  // disable echo on getch
+
+  do {
+    ch = getch();
+    clear();   // clear console
+    PlatformRenderMap(&maze1);
+    refresh();
+  } while (ch != 'q');
+
+  endwin();
 
   return 0;
 }
@@ -53,9 +62,9 @@ internal void PlatformRenderMap(map* maze) {
   int i;
   for (i = 0; i < (int)(maze->rows * maze->cols); i++) {
     if (i > 0 && i % maze->cols == 0) {
-      printf("\n");
+      printw("\n");
     }
-    printf("%c", maze->tiles[i]);
+    printw("%c", maze->tiles[i]);
   }
-  printf("\n");
+  printw("\n");
 }
