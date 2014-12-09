@@ -1,5 +1,6 @@
-CFLAGS=-Wall -g
+FLAGS=-Wall -g
+CC=g++
 all:
-	g++ linux_maze.cpp -o maze
+	$(CC) ${FLAGS} linux_maze.cpp -o maze
 clean:
 	rm -f maze
