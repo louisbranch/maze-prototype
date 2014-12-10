@@ -22,17 +22,19 @@ int main() {
   noecho();    // disable echo on getch
   curs_set(0); // hide cursor
 
+  UnixRenderMap(&maze);
   char ch;
   while (true) {
     ch = getch();
     if (ch == 'q') {
       clear();
-      printw("Are you sure? (y/n)");
+      printw("Are you sure? (y/[n])");
       refresh();
       ch = getch();
       if (ch == 'y') {
         break;
       }
+      UnixRenderMap(&maze);
     }
     enum input btn;
     switch (ch) {
