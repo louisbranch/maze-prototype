@@ -1,47 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <ncurses.h>
 
-#include "maze.h"
-#include "maze.cpp"
-
-#define internal static
-
-internal void UnixReadMapFromFile(const char* fileName, map* maze);
-internal void UnixRenderMap(map* maze);
-internal enum input UnixProcessInput();
-
-int main() {
-  map maze;
-  maze.rows = 6;
-  maze.cols = 45;
-  UnixReadMapFromFile("map1.txt", &maze);
-
+void PlatformInit() {
   initscr();   // starts ncurses mode
   cbreak();    // disable line buffering
   noecho();    // disable echo on getch
   curs_set(0); // hide cursor
-
-  UnixRenderMap(&maze);
-
-  while (true) {
-    enum input btn = UnixProcessInput();
-    if (btn == INPUT_QUIT) {
-      break;
-    } else if (btn != INPUT_INVALID) {
-      HandleInput(btn, &maze);
-      clear();   // clear console
-      UnixRenderMap(&maze);
-      refresh(); // refresh console
-    }
-  }
-
-  endwin(); // end ncurses mode
-  return 0;
 }
 
-internal void UnixReadMapFromFile(const char* fileName, map* maze) {
+void PlatformShutdown() {
+  endwin(); // end ncurses mode
+}
+
+internal void PlatformReadMapFromFile(const char* fileName, map* maze) {
   FILE* fp;
   int i = 0;
   int size = maze->rows * maze->cols;
@@ -66,7 +38,8 @@ internal void UnixReadMapFromFile(const char* fileName, map* maze) {
   }
 }
 
-internal void UnixRenderMap(map* maze) {
+internal void PlatformRenderMap(map* maze) {
+  clear();   // clear console
   int i;
   //maze->tiles[maze->cols * 2 + 1] = '@';
   for (i = 0; i < (int)(maze->rows * maze->cols); i++) {
@@ -76,9 +49,10 @@ internal void UnixRenderMap(map* maze) {
     printw("%c", maze->source[i]);
   }
   printw("\n");
+  refresh(); // refresh console
 }
 
-internal enum input UnixProcessInput() {
+internal enum input PlatformProcessInput() {
   char ch = getch();
   switch (ch) {
     case 'q':

@@ -1,3 +1,7 @@
+#include <stdint.h>
+
+#define internal static
+
 const uint32_t VISION_RADIUS = 5;
 
 struct map {
@@ -7,11 +11,15 @@ struct map {
   uint8_t* tiles;
 };
 
+struct character {
+  uint32_t position;
+};
+
 enum input {
-  INPUT_INVALID = 0<<0,
-  INPUT_UP      = 1<<0,
-  INPUT_DOWN    = 1<<1,
-  INPUT_RIGHT   = 1<<2,
-  INPUT_LEFT    = 1<<3,
-  INPUT_QUIT    = 1<<4
+  INPUT_INVALID,
+  INPUT_UP,
+  INPUT_DOWN,
+  INPUT_RIGHT,
+  INPUT_LEFT,
+  INPUT_QUIT
 };
