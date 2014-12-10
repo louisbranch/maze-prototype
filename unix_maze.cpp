@@ -10,6 +10,7 @@
 
 internal void UnixReadMapFromFile(const char* fileName, map* maze);
 internal void UnixRenderMap(map* maze);
+internal enum input UnixProcessInput();
 
 int main() {
   map maze;
@@ -23,35 +24,12 @@ int main() {
   curs_set(0); // hide cursor
 
   UnixRenderMap(&maze);
-  char ch;
+
   while (true) {
-    ch = getch();
-    if (ch == 'q') {
-      clear();
-      printw("Are you sure? (y/[n])");
-      refresh();
-      ch = getch();
-      if (ch == 'y') {
-        break;
-      }
-      UnixRenderMap(&maze);
-    }
-    enum input btn;
-    switch (ch) {
-      case 'w':
-        btn = INPUT_UP;
-        break;
-      case 's':
-        btn = INPUT_DOWN;
-        break;
-      case 'd':
-        btn = INPUT_RIGHT;
-        break;
-      case 'a':
-        btn = INPUT_LEFT;
-        break;
-    }
-    if (btn) {
+    enum input btn = UnixProcessInput();
+    if (btn == INPUT_QUIT) {
+      break;
+    } else if (btn != INPUT_INVALID) {
       HandleInput(btn, &maze);
       clear();   // clear console
       UnixRenderMap(&maze);
@@ -98,4 +76,23 @@ internal void UnixRenderMap(map* maze) {
     printw("%c", maze->source[i]);
   }
   printw("\n");
+}
+
+internal enum input UnixProcessInput() {
+  char ch = getch();
+  switch (ch) {
+    case 'q':
+      clear();
+      printw("Are you sure? (y/[n])");
+      refresh();
+      ch = getch();
+      if (ch == 'y') {
+        return INPUT_QUIT;
+      }
+    case 'w': return INPUT_UP;
+    case 'a': return INPUT_LEFT;
+    case 's': return INPUT_DOWN;
+    case 'd': return INPUT_RIGHT;
+    default : return INPUT_INVALID;
+  }
 }
