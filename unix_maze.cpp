@@ -4,6 +4,7 @@
 #include <ncurses.h>
 
 #include "maze.h"
+#include "maze.cpp"
 
 #define internal static
 
@@ -34,8 +35,29 @@ int main() {
       }
     }
     clear();   // clear console
-    UnixRenderMap(&maze1);
-    refresh(); // refresh console
+
+    enum input btn;
+
+    switch (ch) {
+      case 'w':
+        btn = INPUT_UP;
+        break;
+      case 's':
+        btn = INPUT_DOWN;
+        break;
+      case 'd':
+        btn = INPUT_RIGHT;
+        break;
+      case 'a':
+        btn = INPUT_LEFT;
+        break;
+    }
+
+    if (btn) {
+      HandleInput(btn);
+      UnixRenderMap(&maze1);
+      refresh(); // refresh console
+    }
   }
 
   endwin(); // end ncurses mode
