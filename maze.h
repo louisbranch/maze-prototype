@@ -1,6 +1,9 @@
+const uint32_t VISION_RADIUS = 5;
+
 struct map {
   uint32_t rows;
   uint32_t cols;
+  uint8_t* source;
   uint8_t* tiles;
 };
 

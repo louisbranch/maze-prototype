@@ -12,17 +12,17 @@ internal void UnixReadMapFromFile(const char* fileName, map* maze);
 internal void UnixRenderMap(map* maze);
 
 int main() {
-  map maze1;
-  maze1.rows = 6;
-  maze1.cols = 45;
-  UnixReadMapFromFile("map1.txt", &maze1);
+  map maze;
+  maze.rows = 6;
+  maze.cols = 45;
+  UnixReadMapFromFile("map1.txt", &maze);
+
+  initscr();   // starts ncurses mode
+  cbreak();    // disable line buffering
+  noecho();    // disable echo on getch
+  curs_set(0); // hide cursor
 
   char ch;
-
-  initscr(); // starts ncurses mode
-  cbreak();  // disable line buffering
-  noecho();  // disable echo on getch
-
   while (true) {
     ch = getch();
     if (ch == 'q') {
@@ -34,10 +34,7 @@ int main() {
         break;
       }
     }
-    clear();   // clear console
-
     enum input btn;
-
     switch (ch) {
       case 'w':
         btn = INPUT_UP;
@@ -52,10 +49,10 @@ int main() {
         btn = INPUT_LEFT;
         break;
     }
-
     if (btn) {
-      HandleInput(btn);
-      UnixRenderMap(&maze1);
+      HandleInput(btn, &maze);
+      clear();   // clear console
+      UnixRenderMap(&maze);
       refresh(); // refresh console
     }
   }
@@ -69,7 +66,8 @@ internal void UnixReadMapFromFile(const char* fileName, map* maze) {
   int i = 0;
   int size = maze->rows * maze->cols;
   char c;
-  maze->tiles = (uint8_t*)malloc(size * sizeof(uint8_t));
+  maze->source = (uint8_t*)malloc(size * sizeof(uint8_t));
+  maze->tiles = (uint8_t*)malloc(VISION_RADIUS * VISION_RADIUS * sizeof(uint8_t));
   fp = fopen(fileName, "r");
   if (fp != 0) {
     while(true) {
@@ -78,7 +76,7 @@ internal void UnixReadMapFromFile(const char* fileName, map* maze) {
         break;
       }
       if (c != '\n') {
-        maze->tiles[i] = c;
+        maze->source[i] = c;
         ++i;
       }
     }
@@ -95,7 +93,7 @@ internal void UnixRenderMap(map* maze) {
     if (i > 0 && i % maze->cols == 0) {
       printw("\n");
     }
-    printw("%c", maze->tiles[i]);
+    printw("%c", maze->source[i]);
   }
   printw("\n");
 }
