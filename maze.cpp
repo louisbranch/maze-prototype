@@ -52,6 +52,7 @@ void MapVision(map* maze, hero* player) {
 void HandleInput(enum input key, hero* player, map* maze) {
   int initial = player->position;
   int next = initial;
+
   switch (key) {
     case INPUT_RIGHT:
       ++next;
@@ -63,20 +64,15 @@ void HandleInput(enum input key, hero* player, map* maze) {
       break;
       //does nothing
   }
-  if (initial == next) {
-    return;
+
+  if (initial != next) {
+    char tile = maze->source[next];
+    if (tile != '#') {
+      maze->source[initial] = ' ';
+      maze->source[next] = '@';
+      player->position = next;
+    }
   }
-
-  char tile = maze->source[next];
-
-  if (tile == '#') {
-    return; // collision
-  }
-
-  maze->source[initial] = ' ';
-  maze->source[next] = '@';
-  player->position = next;
-
 }
 
 int SetHeroPosition(map* maze) {
@@ -86,11 +82,10 @@ int SetHeroPosition(map* maze) {
       i++) {
     if (maze->source[i] == 'S') {
       maze->source[i] = '@';
-      return i;
+      break;
     }
   }
-  //TODO assert position was set
-  return 0;
+  return i;
 }
 
 map CreateMap() {
