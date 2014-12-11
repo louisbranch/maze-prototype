@@ -1,18 +1,16 @@
-#include <stdint.h>
-
 #define internal static
 
-const uint32_t VISION_RADIUS = 5;
+const int VISION_RADIUS = 7;
 
 struct map {
-  uint32_t rows;
-  uint32_t cols;
-  uint8_t* source;
-  uint8_t* tiles;
+  int rows;
+  int cols;
+  char* source;
+  char* tiles;
 };
 
-struct character {
-  uint32_t position;
+struct hero {
+  int position;
 };
 
 enum input {

@@ -18,8 +18,8 @@ internal void PlatformReadMapFromFile(const char* fileName, map* maze) {
   int i = 0;
   int size = maze->rows * maze->cols;
   char c;
-  maze->source = (uint8_t*)malloc(size * sizeof(uint8_t));
-  maze->tiles = (uint8_t*)malloc(VISION_RADIUS * VISION_RADIUS * sizeof(uint8_t));
+  maze->source = (char*)malloc(size * sizeof(char));
+  maze->tiles = (char*)malloc(VISION_RADIUS * VISION_RADIUS * sizeof(char));
   fp = fopen(fileName, "r");
   if (fp != 0) {
     while(true) {
@@ -42,7 +42,9 @@ internal void PlatformRenderMap(map* maze) {
   clear();   // clear console
   int i;
   //maze->tiles[maze->cols * 2 + 1] = '@';
-  for (i = 0; i < (int)(maze->rows * maze->cols); i++) {
+  for (i = 0;
+      i < maze->rows * maze->cols;
+      i++) {
     if (i > 0 && i % maze->cols == 0) {
       printw("\n");
     }
