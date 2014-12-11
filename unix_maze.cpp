@@ -14,23 +14,30 @@ void PlatformShutdown() {
 }
 
 internal void PlatformReadMapFromFile(const char* fileName, map* maze) {
+  maze->tiles = (char**) malloc(maze->rows * sizeof(char*));
+  int i;
+  for (i = 0; i < maze->rows; i++) {
+    maze->tiles[i] = (char*) malloc(maze->cols * sizeof(char));
+  }
+
   FILE* fp;
-  int i = 0;
-  int size = maze->rows * maze->cols;
   char c;
-  maze->source = (char*)malloc(size * sizeof(char));
-  maze->tiles = (char*)malloc(VISION_RADIUS * VISION_RADIUS * sizeof(char));
+  int x, y;
+  bool eof = false;
+
   fp = fopen(fileName, "r");
   if (fp != 0) {
-    while(true) {
-      c = fgetc(fp);
-      if(i >= size || feof(fp)) {
-        break;
+    for (x = 0; x < maze->rows; x++) {
+      if (eof) { break; }
+      for (y = 0; y < maze->cols; y++) {
+        c = fgetc(fp);
+        if (feof(fp)) {
+          eof = true;
+          break;
+        }
+        maze->tiles[x][y] = c;
       }
-      if (c != '\n') {
-        maze->source[i] = c;
-        ++i;
-      }
+      fgetc(fp); // pop newline
     }
     fclose(fp);
   } else {
@@ -40,17 +47,13 @@ internal void PlatformReadMapFromFile(const char* fileName, map* maze) {
 
 internal void PlatformRenderMap(map* maze) {
   clear();   // clear console
-  int i;
-  //maze->tiles[maze->cols * 2 + 1] = '@';
-  for (i = 0;
-      i < maze->rows * maze->cols;
-      i++) {
-    if (i > 0 && i % maze->cols == 0) {
-      printw("\n");
+  int x, y;
+  for (x = 0; x < maze->rows; x++) {
+    for (y = 0; y < maze->cols; y++) {
+      printw("%c", maze->tiles[x][y]);
     }
-    printw("%c", maze->source[i]);
+    printw("\n");
   }
-  printw("\n");
   refresh(); // refresh console
 }
 

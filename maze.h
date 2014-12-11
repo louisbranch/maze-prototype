@@ -5,12 +5,16 @@ const int VISION_RADIUS = 7;
 struct map {
   int rows;
   int cols;
-  char* source;
-  char* tiles;
+  char** tiles;
+};
+
+struct vector {
+  int x;
+  int y;
 };
 
 struct hero {
-  int position;
+  vector position;
 };
 
 enum input {

@@ -3,7 +3,7 @@
 
 void MapVision(map* maze, hero* player);
 void HandleInput(enum input key, hero* player, map* maze);
-int SetHeroPosition(map* maze);
+vector SetHeroPosition(map* maze);
 map CreateMap();
 
 int main() {
@@ -33,59 +33,63 @@ int main() {
 }
 
 void MapVision(map* maze, hero* player) {
-  int position = player->position;
-  int size = maze->rows * maze->cols;
-  int i;
-  int j = 0;
-
-  for(i = position - 3;
-      i < position + 4;
-      i++) {
-    if (i >= 0 && i <= size) {
-      maze->tiles[j] = maze->source[i];
-      j++;
-    }
-  }
   PlatformRenderMap(maze);
 }
 
 void HandleInput(enum input key, hero* player, map* maze) {
-  int initial = player->position;
-  int next = initial;
-
+  vector initial = player->position;
+  vector next = initial;
   switch (key) {
+    case INPUT_UP:
+      next.x--;
+      break;
+    case INPUT_DOWN:
+      next.x++;
+      break;
     case INPUT_RIGHT:
-      ++next;
+      next.y++;
       break;
     case INPUT_LEFT:
-      --next;
+      next.y--;
       break;
     default:
       break;
       //does nothing
   }
-
-  if (initial != next) {
-    char tile = maze->source[next];
-    if (tile != '#') {
-      maze->source[initial] = ' ';
-      maze->source[next] = '@';
-      player->position = next;
-    }
+  if (initial.x == next.x && initial.y == next.y) {
+    return; // same position
   }
+  if (next.x < 0 || next.x >= maze->rows) {
+    return; // invalid x axis
+  }
+  if (next.y < 0 || next.y >= maze->cols) {
+    return; // invalid y axis
+  }
+  if (maze->tiles[next.x][next.y] == '#') {
+    return; // collision detection
+  }
+  maze->tiles[initial.x][initial.y] = ' ';
+  maze->tiles[next.x][next.y] = '@';
+  player->position = next;
 }
 
-int SetHeroPosition(map* maze) {
-  int i;
-  for(i = 0;
-      i < maze->rows * maze->cols;
-      i++) {
-    if (maze->source[i] == 'S') {
-      maze->source[i] = '@';
-      break;
+vector SetHeroPosition(map* maze) {
+  vector position;
+  int x, y;
+  bool found = false;
+  for (x = 0; x < maze->rows; x++) {
+    for (y = 0; y < maze->cols; y++) {
+      if (maze->tiles[x][y] == 'S') {
+        found = true;
+        maze->tiles[x][y] = '@';
+        break;
+      }
     }
+    if (found) { break; }
   }
-  return i;
+  position.x = x;
+  position.y = y;
+  return position;
 }
 
 map CreateMap() {
