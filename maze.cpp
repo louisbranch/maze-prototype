@@ -2,7 +2,7 @@
 #include "unix_maze.cpp"
 
 void MapVision(map* maze, hero* player);
-void HandleInput(enum input key, map* maze);
+void HandleInput(enum input key, hero* player, map* maze);
 int SetHeroPosition(map* maze);
 map CreateMap();
 
@@ -23,7 +23,7 @@ int main() {
     if (key == INPUT_QUIT) {
       running = false;
     } else if (key != INPUT_INVALID) {
-      HandleInput(key, &maze);
+      HandleInput(key, &player, &maze);
       MapVision(&maze, &player);
     }
   }
@@ -49,8 +49,34 @@ void MapVision(map* maze, hero* player) {
   PlatformRenderMap(maze);
 }
 
-void HandleInput(enum input i, map* maze) {
-  printw("%i", i);
+void HandleInput(enum input key, hero* player, map* maze) {
+  int initial = player->position;
+  int next = initial;
+  switch (key) {
+    case INPUT_RIGHT:
+      ++next;
+      break;
+    case INPUT_LEFT:
+      --next;
+      break;
+    default:
+      break;
+      //does nothing
+  }
+  if (initial == next) {
+    return;
+  }
+
+  char tile = maze->source[next];
+
+  if (tile == '#') {
+    return; // collision
+  }
+
+  maze->source[initial] = ' ';
+  maze->source[next] = '@';
+  player->position = next;
+
 }
 
 int SetHeroPosition(map* maze) {
