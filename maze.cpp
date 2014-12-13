@@ -4,27 +4,31 @@
 void MapVision(map* maze, hero* player);
 void HandleInput(enum input key, hero* player, map* maze);
 vector SetHeroPosition(map* maze);
-map CreateMap();
+map LoadMap(int number);
 
 int main() {
   bool running = true;
+  bool playing = false;
+  map maze;
+  hero player;
 
   PlatformInit();
 
-  map maze = CreateMap();
-
-  hero player;
-  player.position = SetHeroPosition(&maze);
-
-  MapVision(&maze, &player);
-
   while (running) {
-    enum input key = PlatformProcessInput();
-    if (key == INPUT_QUIT) {
-      running = false;
-    } else if (key != INPUT_INVALID) {
-      HandleInput(key, &player, &maze);
+    if (playing) {
+      enum input key = PlatformProcessInput();
+      if (key == INPUT_QUIT) {
+        running = false;
+      } else if (key != INPUT_INVALID) {
+        HandleInput(key, &player, &maze);
+        MapVision(&maze, &player);
+      }
+    } else {
+      //TODO create initial menu
+      maze = LoadMap(1);
+      player.position = SetHeroPosition(&maze);
       MapVision(&maze, &player);
+      playing = true;
     }
   }
 
@@ -92,10 +96,14 @@ vector SetHeroPosition(map* maze) {
   return position;
 }
 
-map CreateMap() {
+map LoadMap(int number) {
   map maze;
-  maze.rows = 6;
-  maze.cols = 45;
-  PlatformReadMapFromFile("map1.txt", &maze);
+  switch (number) {
+    case 1:
+      maze.rows = 6;
+      maze.cols = 45;
+      PlatformReadMapFromFile("map1.txt", &maze);
+      break;
+  }
   return maze;
 }
