@@ -115,7 +115,7 @@ map LoadMap(int number) {
   switch (number) {
     case 1:
       maze.rows = 6;
-      maze.cols = 45;
+      maze.cols = 47;
       PlatformReadMapFromFile("map1.txt", &maze);
       break;
   }
