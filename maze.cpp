@@ -1,10 +1,10 @@
 #include "maze.h"
 #include "unix_maze.cpp"
 
-void MapVision(map* maze, hero* player);
-enum game_stage HandleInput(enum input key, hero* player, map* maze);
-vector SetHeroPosition(map* maze);
-map LoadMap(int number);
+void MapVision(map*, hero*);
+enum game_stage HandleInput(enum input, hero*, map*);
+vector SetHeroPosition(map*);
+map LoadMap(int);
 
 int main() {
   bool running = true;
@@ -48,7 +48,7 @@ int main() {
 }
 
 void MapVision(map* maze, hero* player) {
-  PlatformRenderMap(maze);
+  PlatformRenderMap(maze, player);
 }
 
 enum game_stage HandleInput(enum input key, hero* player, map* maze) {
@@ -69,17 +69,14 @@ enum game_stage HandleInput(enum input key, hero* player, map* maze) {
       next.y--;
       break;
     default:
-      break;
-      //does nothing
+      return stage;
   }
   if (initial.x == next.x && initial.y == next.y) {
     return stage; // same position
   }
-  if (next.x < 0 || next.x >= maze->rows) {
-    return stage; // invalid x axis
-  }
-  if (next.y < 0 || next.y >= maze->cols) {
-    return stage; // invalid y axis
+  if (InvalidVector(next, maze)) {
+    //TODO log error
+    return stage;
   }
   if (maze->tiles[next.x][next.y] == '#') {
     return stage; // collision detection
@@ -123,4 +120,11 @@ map LoadMap(int number) {
       break;
   }
   return maze;
+}
+
+bool InvalidVector(vector v, map* maze) {
+  return v.x < 0 ||
+         v.y < 0 ||
+         v.x >= maze->rows ||
+         v.y >= maze->cols;
 }

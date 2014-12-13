@@ -45,12 +45,24 @@ internal void PlatformReadMapFromFile(const char* fileName, map* maze) {
   }
 }
 
-internal void PlatformRenderMap(map* maze) {
+internal void PlatformRenderMap(map* maze, hero* player) {
   clear();   // clear console
-  int x, y;
-  for (x = 0; x < maze->rows; x++) {
-    for (y = 0; y < maze->cols; y++) {
-      printw("%c", maze->tiles[x][y]);
+  int i, j;
+  for (i = 0; i < VISION_HEIGHT; i++) {
+    for (j = 0; j < VISION_WIDTH; j++) {
+      vector coord = VISION_COORDS[i][j];
+      vector v;
+      v.x = player->position.x + coord.x;
+      v.y = player->position.y + coord.y;
+      bool invalid = InvalidVector(v, maze);
+      bool far = coord.x == EMPTY.x;
+      if (far) {
+        printw(".");
+      } else if (invalid) {
+        printw("#");
+      } else {
+        printw("%c", maze->tiles[v.x][v.y]);
+      }
     }
     printw("\n");
   }
