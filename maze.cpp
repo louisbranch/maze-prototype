@@ -2,7 +2,7 @@
 #include "unix_maze.cpp"
 
 void MapVision(map* maze, hero* player);
-void HandleInput(enum input key, hero* player, map* maze);
+enum game_stage HandleInput(enum input key, hero* player, map* maze);
 vector SetHeroPosition(map* maze);
 map LoadMap(int number);
 
@@ -21,9 +21,12 @@ int main() {
         if (key == INPUT_QUIT) {
           stage = STAGE_EXIT;
         } else if (key != INPUT_INVALID) {
-          HandleInput(key, &player, &maze);
+          stage = HandleInput(key, &player, &maze);
           MapVision(&maze, &player);
         }
+      } break;
+      case STAGE_NEXT_LEVEL: { //TODO add more maps!
+        stage = STAGE_EXIT;
       } break;
       case STAGE_MAIN_MENU: { //TODO create intro menu
         maze = LoadMap(1);
@@ -48,7 +51,8 @@ void MapVision(map* maze, hero* player) {
   PlatformRenderMap(maze);
 }
 
-void HandleInput(enum input key, hero* player, map* maze) {
+enum game_stage HandleInput(enum input key, hero* player, map* maze) {
+  enum game_stage stage = STAGE_PLAYING;
   vector initial = player->position;
   vector next = initial;
   switch (key) {
@@ -69,20 +73,25 @@ void HandleInput(enum input key, hero* player, map* maze) {
       //does nothing
   }
   if (initial.x == next.x && initial.y == next.y) {
-    return; // same position
+    return stage; // same position
   }
   if (next.x < 0 || next.x >= maze->rows) {
-    return; // invalid x axis
+    return stage; // invalid x axis
   }
   if (next.y < 0 || next.y >= maze->cols) {
-    return; // invalid y axis
+    return stage; // invalid y axis
   }
   if (maze->tiles[next.x][next.y] == '#') {
-    return; // collision detection
+    return stage; // collision detection
+  }
+  if (maze->tiles[next.x][next.y] == 'E') {
+    stage = STAGE_NEXT_LEVEL;
+    return stage; // reached exit
   }
   maze->tiles[initial.x][initial.y] = ' ';
   maze->tiles[next.x][next.y] = '@';
   player->position = next;
+  return stage;
 }
 
 vector SetHeroPosition(map* maze) {
