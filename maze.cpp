@@ -8,27 +8,35 @@ map LoadMap(int number);
 
 int main() {
   bool running = true;
-  bool playing = false;
+  enum game_stage stage = STAGE_MAIN_MENU;
   map maze;
   hero player;
 
   PlatformInit();
 
   while (running) {
-    if (playing) {
-      enum input key = PlatformProcessInput();
-      if (key == INPUT_QUIT) {
-        running = false;
-      } else if (key != INPUT_INVALID) {
-        HandleInput(key, &player, &maze);
+    switch (stage) {
+      case STAGE_PLAYING: {
+        enum input key = PlatformProcessInput();
+        if (key == INPUT_QUIT) {
+          stage = STAGE_EXIT;
+        } else if (key != INPUT_INVALID) {
+          HandleInput(key, &player, &maze);
+          MapVision(&maze, &player);
+        }
+      } break;
+      case STAGE_MAIN_MENU: { //TODO create intro menu
+        maze = LoadMap(1);
+        player.position = SetHeroPosition(&maze);
         MapVision(&maze, &player);
-      }
-    } else {
-      //TODO create initial menu
-      maze = LoadMap(1);
-      player.position = SetHeroPosition(&maze);
-      MapVision(&maze, &player);
-      playing = true;
+        stage = STAGE_PLAYING;
+      } break;
+      case STAGE_EXIT: {
+        running = false;
+      } break;
+      default:
+        // does nothing yet
+        break;
     }
   }
 
