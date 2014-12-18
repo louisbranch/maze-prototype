@@ -14,10 +14,10 @@ void PlatformShutdown() {
 }
 
 internal void PlatformReadMapFromFile(const char* fileName, map* maze) {
-  maze->tiles = (char**) malloc(maze->rows * sizeof(char*));
+  maze->tiles = (char**) malloc(maze->cols * sizeof(char*));
   int i;
-  for (i = 0; i < maze->rows; i++) {
-    maze->tiles[i] = (char*) malloc(maze->cols * sizeof(char));
+  for (i = 0; i < maze->cols; i++) {
+    maze->tiles[i] = (char*) malloc(maze->rows * sizeof(char));
   }
 
   FILE* fp;
@@ -27,9 +27,9 @@ internal void PlatformReadMapFromFile(const char* fileName, map* maze) {
 
   fp = fopen(fileName, "r");
   if (fp != 0) {
-    for (x = 0; x < maze->rows; x++) {
+    for (y = 0; y < maze->rows; y++) {
       if (eof) { break; }
-      for (y = 0; y < maze->cols; y++) {
+      for (x = 0; x < maze->cols; x++) {
         c = fgetc(fp);
         if (feof(fp)) {
           eof = true;
@@ -47,24 +47,13 @@ internal void PlatformReadMapFromFile(const char* fileName, map* maze) {
 
 internal void PlatformRenderMap(map* maze, hero* player) {
   clear();   // clear console
-  int width = VISION_WIDTH / 2;
-  int height = VISION_HEIGHT / 2;
-  int x = -height;
 
-  while (x < height) {
-    int y = -width;
-    while (y < width) {
-      vector v;
-      v.x = player->position.x + x;
-      v.y = player->position.y + y;
-      bool invalid = InvalidVector(v, maze);
-      if (!invalid) {
-        printw("%c", maze->tiles[v.x][v.y]);
-      }
-      y++;
+  int x,y;
+  for (y = 0; y < maze->rows; y++) {
+    for (x = 0; x < maze->cols; x++) {
+      printw("%c", maze->tiles[x][y]);
     }
     printw("\n");
-    x++;
   }
   refresh(); // refresh console
 }

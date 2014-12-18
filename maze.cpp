@@ -57,16 +57,16 @@ enum game_stage HandleInput(enum input key, hero* player, map* maze) {
   vector next = initial;
   switch (key) {
     case INPUT_UP:
-      next.x--;
+      next.y--;
       break;
     case INPUT_DOWN:
-      next.x++;
-      break;
-    case INPUT_RIGHT:
       next.y++;
       break;
+    case INPUT_RIGHT:
+      next.x++;
+      break;
     case INPUT_LEFT:
-      next.y--;
+      next.x--;
       break;
     default:
       return stage;
@@ -125,6 +125,6 @@ map LoadMap(int number) {
 bool InvalidVector(vector v, map* maze) {
   return v.x < 0 ||
          v.y < 0 ||
-         v.x >= maze->rows ||
-         v.y >= maze->cols;
+         v.x >= maze->cols ||
+         v.y >= maze->rows;
 }
