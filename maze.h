@@ -1,7 +1,7 @@
 #define internal static
 
-const int VISION_WIDTH = 20;
-const int VISION_HEIGHT = 5;
+const int VISION_COLS = 20;
+const int VISION_ROWS = 5;
 
 struct map {
   int rows;

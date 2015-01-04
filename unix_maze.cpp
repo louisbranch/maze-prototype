@@ -48,10 +48,22 @@ internal void PlatformReadMapFromFile(const char* fileName, map* maze) {
 internal void PlatformRenderMap(map* maze, hero* player) {
   clear();   // clear console
 
+  int initial_x = - player->position.x;
+  int initial_y = - player->position.y;
+
+  int cols = VISION_COLS + initial_x;
+  int rows = VISION_ROWS + initial_y;
+
   int x,y;
-  for (y = 0; y < maze->rows; y++) {
-    for (x = 0; x < maze->cols; x++) {
-      printw("%c", maze->tiles[x][y]);
+
+  for (y = initial_y; y < rows; y++) {
+    for (x = initial_x; x < cols; x++) {
+      vector v;
+      v.x = player->position.x + x;
+      v.y = player->position.y + y;
+      if (!InvalidVector(v, maze)) {
+        printw("%c", maze->tiles[v.x][v.y]);
+      }
     }
     printw("\n");
   }
